@@ -1,9 +1,3 @@
-#TODO
-- read through react-code-example
-- read up on ReST API and GraphQL 
-- set up flask
-- set up database
-
-#tasks
-- set up rest API
-- post and read data
+# React
+Build two views with a shared context and routing
+A button to send a request to backend be it post/get/...
