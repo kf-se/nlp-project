@@ -1,6 +1,9 @@
 # React
 Build two views with a shared context and routing
-A button to send a request to backend be it post/get/...
+
+**TODO** 
+- Simple datastructure to update
+- Make it possible to post/put/create/delete with http request
 
 **To start**
 - Execute 'npm run dev' in terminal
