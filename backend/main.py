@@ -8,7 +8,7 @@ def test_response():
     return make_response(
         'Test worked!',
         200,
-        header=headers
+        headers=headers
     )
 
 @app.get("/hello")

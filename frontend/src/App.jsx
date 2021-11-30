@@ -1,9 +1,14 @@
 import { useState, createContext} from 'react'
-import UseStateExample from './components/UseStateExample.jsx'
-import UseEffectExample from './components/UseEffectExample.jsx'
-import ReadContextExample from './components/ReadContextExample.jsx';
-import UpdateContextExample from './components/UpdateContextExample.jsx';
-import FormInputWrapperMethod from './components/FormInputWrapperMethod.jsx';
+
+import {
+  BrowserRouter as Router,
+  Route,
+  Routes,
+  Link
+} from "react-router-dom"
+
+import ChatView from './components/ChatView.jsx';
+
 
 // Create and export a global context we can use as store
 export const Context = createContext();
@@ -11,7 +16,7 @@ export const Context = createContext();
 function App() {
 
   const [contextVal, setContext] = useState({
-    hello: "default context data"
+    hello:"NaN"
   })
 
   function updateContext(updates){
@@ -23,13 +28,15 @@ function App() {
 
   return (
       <Context.Provider value={[contextVal, updateContext]}>
-      <div> 
-        <FormInputWrapperMethod/>
-        <ReadContextExample/>
-        <UpdateContextExample/>
-        <UseEffectExample/>
-        <UseStateExample/>
-      </div>
+        <Router>
+          <nav>
+            <Link to="/">Home</Link>
+            <Link to="/chat">Chat box</Link>
+          </nav>
+          <Routes>
+            <Route path="/chat" element={<ChatView/>}/>
+          </Routes>
+        </Router>
       </Context.Provider>
   )
 }
