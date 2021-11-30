@@ -1,9 +1,9 @@
-#TODO
-- read through react-code-example
-- read up on ReST API and GraphQL 
-- set up flask
-- set up database
+# React
+Build two views with a shared context and routing
 
-#tasks
-- set up rest API
-- post and read data
+**TODO** 
+- Simple datastructure to update
+- Make it possible to post/put/create/delete with http request
+
+**To start**
+- Execute 'npm run dev' in terminal
