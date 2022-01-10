@@ -2,6 +2,7 @@ from flask import Flask, request
 from flask_restful import Api, Resource, reqparse, abort, fields, marshal_with
 from flask_sqlalchemy import SQLAlchemy
 import sqlite3
+from random import randrange
 
 app = Flask(__name__)
 api = Api(app)
@@ -14,31 +15,36 @@ class VideoModel(db.Model):
     name = db.Column(db.String(100), nullable=False)
     views = db.Column(db.Integer, nullable=False)
     likes = db.Column(db.Integer, nullable=False)
-    comments = db.relationship('CommentsModel', backref='video', lazy=True) 
+    comments = db.relationship(
+        'CommentModel', 
+        backref='video',
+        cascade='all, delete, delete-orphan',
+        single_parent=True,
+        lazy=True
+    ) 
 
-    def __init__(self, id=None, name=None, views=None, likes=None, comments=None):
+    def __init__(self, id=None, name=None, views=None, likes=None):
         self.id = id
         self.name = name
         self.views = views
         self.likes = likes
-        self.comments = comments
 
     def __repr__(self):
-        return f"name={name}, views={views}, likes={likes}"
+        return f"video(name={name}, views={views}, likes={likes}, comments={comments})"
 
-class CommentsModel(db.Model):
-    __tablename__ = 'comments'
+class CommentModel(db.Model):
+    __tablename__ = 'comment'
     id = db.Column(db.Integer, primary_key=True)
-    comment = db.Column(db.String(255), nullable=False)
+    content = db.Column(db.String(1000), nullable=False)
     video_id = db.Column(db.Integer, db.ForeignKey('video.id'), nullable=False)
 
-    def __init__(self, id=None, comment=None, video_id=None):
+    def __init__(self, id=None, content=None, video_id=None):
         self.id = id
-        self.comment = comment
+        self.content = content
         self.video_id = video_id
 
     def __repr__(self):
-        return f"comments={comment}, video_id={video_id}"
+        return f"comment(content={content}, video_id={video_id})"
 
 db.create_all()
 
@@ -46,17 +52,20 @@ video_put_args = reqparse.RequestParser()
 video_put_args.add_argument("name", type=str, help="Name of the video is required", required=True)
 video_put_args.add_argument("views", type=str, help="Views of the video is required", required=True)
 video_put_args.add_argument("likes", type=str, help="Likes on the video is required", required=True)
+video_put_args.add_argument("comments", type=str, help="Comments", required=False)
 
 video_update_args = reqparse.RequestParser()
 video_update_args.add_argument("views", type=str, help="Views of the video")
 video_update_args.add_argument("likes", type=str, help="Likes on the video")
 video_update_args.add_argument("name", type=str, help="Name of the video")
+video_update_args.add_argument("comments", type=str, help="Comments", required=False)
 
 resource_fields = {
     'id': fields.Integer,
     'name': fields.String,
     'views': fields.Integer,
-    'likes': fields.Integer
+    'likes': fields.Integer,
+    #'comments': None
 }
 
 class Video(Resource):
@@ -108,11 +117,11 @@ class Video(Resource):
         return '', 204
 
 comment_put_args = reqparse.RequestParser()
-comment_put_args.add_argument("comment", type=str, help="Comment on the video is required", required=True)
+comment_put_args.add_argument("content", type=str, help="Comment on the video is required", required=True)
 
 resource_fields_comment = {
     'id': fields.Integer,
-    'comment': fields.String
+    'content': fields.String
 }
 
 class Comment(Resource):
@@ -125,10 +134,14 @@ class Comment(Resource):
 
     @marshal_with(resource_fields_comment)
     def put(self, video_id):
+        args = comment_put_args.parse_args()
         result = VideoModel.query.filter_by(id=video_id).first()
         if not result:
             abort(404, message="Could not find video with that id")
-        pass
+
+        comment = CommentModel(id=randrange(1000), content=args['content'], video_id=video_id)
+
+        return comment, 201
 
     @marshal_with(resource_fields_comment)
     def patch(self, video_id):
@@ -145,7 +158,7 @@ class Comment(Resource):
         pass
 
 api.add_resource(Video, "/video/<string:video_id>")
-api.add_resource(Comment, "/video/comment/<string:video_id>")
+api.add_resource(Comment, "/video/<string:video_id>/comment")
 
 if __name__== "__main__":
     app.run(debug=True)
