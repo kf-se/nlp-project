@@ -2,12 +2,7 @@
 React frontend
 Flask backend
 
-#TODO
-- read through react-code-example
-- read up on ReST API and GraphQL 
-- set up flask
-- set up database
-
-#tasks
-- set up rest API
-- post and read data
+# Assignment
+Backend is of interest. Minimal flask rest api. 
+Intended to make a relational database but not working yet.
+Can CRUD video's/comment's but relationship between them not working yet.
